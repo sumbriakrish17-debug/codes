@@ -29,7 +29,9 @@ void display()
         for (i = 0; i <= rear; i++)
             printf("%d ", queue[i]);
     }
-
+    printf( "\n");
+    printf("front index%d\n" , front);
+    printf("rear index %d \n" , rear);
     printf("\n");
 }
 
