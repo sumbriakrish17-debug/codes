@@ -1,0 +1,248 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+// Create new node
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+
+// Level order insertion
+struct Node* insert(struct Node* root, int data) {
+    struct Node* newNode = createNode(data);
+
+    if (root == NULL)
+        return newNode;
+
+    struct Node* queue[100];
+    int front = 0, rear = 0;
+
+    queue[rear++] = root;
+
+    while (front < rear) {
+        struct Node* temp = queue[front++];
+
+        if (temp->left == NULL) {
+            temp->left = newNode;
+            return root;
+        } else
+            queue[rear++] = temp->left;
+
+        if (temp->right == NULL) {
+            temp->right = newNode;
+            return root;
+        } else
+            queue[rear++] = temp->right;
+    }
+    return root;
+}
+
+// Find deepest node
+struct Node* getDeepestNode(struct Node* root) {
+    struct Node* temp;
+    struct Node* queue[100];
+    int front = 0, rear = 0;
+
+    queue[rear++] = root;
+
+    while (front < rear) {
+        temp = queue[front++];
+
+        if (temp->left)
+            queue[rear++] = temp->left;
+
+        if (temp->right)
+            queue[rear++] = temp->right;
+    }
+    return temp;
+}
+
+// Delete deepest node
+void deleteDeepest(struct Node* root, struct Node* dNode) {
+    struct Node* temp;
+    struct Node* queue[100];
+    int front = 0, rear = 0;
+
+    queue[rear++] = root;
+
+    while (front < rear) {
+        temp = queue[front++];
+
+        if (temp->left) {
+            if (temp->left == dNode) {
+                temp->left = NULL;
+                free(dNode);
+                return;
+            } else
+                queue[rear++] = temp->left;
+        }
+
+        if (temp->right) {
+            if (temp->right == dNode) {
+                temp->right = NULL;
+                free(dNode);
+                return;
+            } else
+                queue[rear++] = temp->right;
+        }
+    }
+}
+
+// Delete node by value
+struct Node* deleteNode(struct Node* root, int key) {
+    if (root == NULL)
+        return NULL;
+
+    if (root->left == NULL && root->right == NULL) {
+        if (root->data == key) {
+            free(root);
+            return NULL;
+        } else
+            return root;
+    }
+
+    struct Node* keyNode = NULL;
+    struct Node* temp;
+    struct Node* queue[100];
+    int front = 0, rear = 0;
+
+    queue[rear++] = root;
+
+    while (front < rear) {
+        temp = queue[front++];
+
+        if (temp->data == key)
+            keyNode = temp;
+
+        if (temp->left)
+            queue[rear++] = temp->left;
+
+        if (temp->right)
+            queue[rear++] = temp->right;
+    }
+
+    if (keyNode != NULL) {
+        struct Node* deepest = getDeepestNode(root);
+        keyNode->data = deepest->data;
+        deleteDeepest(root, deepest);
+    }
+
+    return root;
+}
+
+// Inorder traversal
+void inorder(struct Node* root) {
+    if (root) {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
+    }
+}
+
+// Check Strictly Binary Tree
+int isStrict(struct Node* root) {
+    if (root == NULL)
+        return 1;
+
+    if ((root->left == NULL && root->right != NULL) ||
+        (root->left != NULL && root->right == NULL))
+        return 0;
+
+    return isStrict(root->left) && isStrict(root->right);
+}
+
+// Count nodes
+int countNodes(struct Node* root) {
+    if (root == NULL)
+        return 0;
+    return 1 + countNodes(root->left) + countNodes(root->right);
+}
+
+// Check Complete Binary Tree
+int isComplete(struct Node* root, int index, int totalNodes) {
+    if (root == NULL)
+        return 1;
+
+    if (index >= totalNodes)
+        return 0;
+
+    return isComplete(root->left, 2 * index + 1, totalNodes) &&
+           isComplete(root->right, 2 * index + 2, totalNodes);
+}
+
+// MAIN MENU
+int main() {
+    struct Node* root = NULL;
+    int choice, value;
+
+    while (1) {
+        printf("\n--- MENU ---\n");
+        printf("1. Insert\n");
+        printf("2. Delete\n");
+        printf("3. Display (Inorder)\n");
+        printf("4. Check Strictly Binary Tree\n");
+        printf("5. Check Complete Binary Tree\n");
+        printf("6. Check Almost Complete Binary Tree\n");
+        printf("7. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+        case 1:
+            printf("Enter value to insert: ");
+            scanf("%d", &value);
+            root = insert(root, value);
+            break;
+
+        case 2:
+            printf("Enter value to delete: ");
+            scanf("%d", &value);
+            root = deleteNode(root, value);
+            break;
+
+        case 3:
+            printf("Inorder Traversal: ");
+            inorder(root);
+            printf("\n");
+            break;
+
+        case 4:
+            if (isStrict(root))
+                printf("Tree is Strictly Binary Tree\n");
+            else
+                printf("Tree is NOT Strictly Binary Tree\n");
+            break;
+
+        case 5: {
+            int totalNodes = countNodes(root);
+            if (isComplete(root, 0, totalNodes))
+                printf("Tree is Complete Binary Tree\n");
+            else
+                printf("Tree is NOT Complete Binary Tree\n");
+            break;
+        }
+
+        case 6: {
+            int totalNodes = countNodes(root);
+            if (isComplete(root, 0, totalNodes))
+                printf("Tree is Almost Complete Binary Tree\n");
+            else
+                printf("Tree is NOT Almost Complete Binary Tree\n");
+            break;
+        }
+
+        case 7:
+            exit(0);
+
+        default:
+            printf("Invalid choice\n");
+        }
+    }
+}
