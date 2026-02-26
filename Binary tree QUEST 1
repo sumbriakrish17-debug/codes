@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define structure for a tree node
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+};
+
+// Function to create a new node
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+// Function to insert node in level order
+struct Node* insertLevelOrder(struct Node* root, int data) {
+    // Create new node
+    struct Node* newNode = createNode(data);
+
+    // If tree is empty
+    if (root == NULL) {
+        return newNode;
+    }
+
+    // Create a queue for level order traversal
+    struct Node* queue[100];
+    int front = 0, rear = 0;
+
+    // Enqueue root
+    queue[rear++] = root;
+
+    // Traverse tree in level order
+    while (front < rear) {
+        struct Node* temp = queue[front++];
+
+        // Insert as left child if empty
+        if (temp->left == NULL) {
+            temp->left = newNode;
+            return root;
+        } else {
+            queue[rear++] = temp->left;
+        }
+
+        // Insert as right child if empty
+        if (temp->right == NULL) {
+            temp->right = newNode;
+            return root;
+        } else {
+            queue[rear++] = temp->right;
+        }
+    }
+
+    return root;
+}
+
+// Function to print tree in level order
+void printLevelOrder(struct Node* root) {
+    if (root == NULL)
+        return;
+
+    struct Node* queue[100];
+    int front = 0, rear = 0;
+
+    queue[rear++] = root;
+
+    while (front < rear) {
+        struct Node* temp = queue[front++];
+        printf("%d ", temp->data);
+
+        if (temp->left != NULL)
+            queue[rear++] = temp->left;
+
+        if (temp->right != NULL)
+            queue[rear++] = temp->right;
+    }
+}
+
+int main() {
+    struct Node* root = NULL;
+    int n, value;
+
+    printf("Enter number of nodes: ");
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i++) {
+        printf("Enter data for node %d: ", i + 1);
+        scanf("%d", &value);
+        root = insertLevelOrder(root, value);
+    }
+
+    printf("\nLevel-order traversal of the Binary Tree:\n");
+    printLevelOrder(root);
+
+    return 0;
+}
