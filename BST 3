@@ -1,29 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Node
-{
+struct Node{
     int data;
     struct Node *left;
     struct Node *right;
     int height;
 };
 
-int max(int a,int b)
-{
+int max(int a,int b){
     return (a>b)?a:b;
 }
 
-int height(struct Node *n)
-{
+int height(struct Node *n){
     if(n==NULL)
         return 0;
     return n->height;
 }
 
-struct Node* createNode(int value)
-{
-    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+struct Node* createNode(int value){
+    struct Node* node=(struct Node*)malloc(sizeof(struct Node));
     node->data=value;
     node->left=NULL;
     node->right=NULL;
@@ -31,16 +27,31 @@ struct Node* createNode(int value)
     return node;
 }
 
-int getBalance(struct Node *n)
-{
+int getBalance(struct Node *n){
     if(n==NULL)
         return 0;
     return height(n->left)-height(n->right);
 }
 
-/* LL Rotation (Right Rotation) */
-struct Node* rightRotate(struct Node *y)
-{
+struct Node* insert(struct Node* root,int key){
+
+    if(root==NULL)
+        return createNode(key);
+
+    if(key < root->data)
+        root->left = insert(root->left,key);
+
+    else if(key > root->data)
+        root->right = insert(root->right,key);
+
+    root->height = 1 + max(height(root->left),height(root->right));
+
+    return root;
+}
+
+/* LL Rotation */
+struct Node* rightRotate(struct Node *y){
+
     struct Node *x = y->left;
     struct Node *T2 = x->right;
 
@@ -53,43 +64,16 @@ struct Node* rightRotate(struct Node *y)
     return x;
 }
 
-struct Node* insert(struct Node* node,int key)
-{
-    if(node==NULL)
-        return createNode(key);
-
-    if(key < node->data)
-        node->left = insert(node->left,key);
-
-    else if(key > node->data)
-        node->right = insert(node->right,key);
-
-    else
-        return node;
-
-    node->height = 1 + max(height(node->left),height(node->right));
-
-    int balance = getBalance(node);
-
-    /* Only LL case handled */
-    if(balance > 1 && key < node->left->data)
-        return rightRotate(node);
-
-    return node;
-}
-
-void inorder(struct Node *root)
-{
-    if(root!=NULL)
-    {
+void inorder(struct Node *root){
+    if(root!=NULL){
         inorder(root->left);
         printf("%d(BF=%d) ",root->data,getBalance(root));
         inorder(root->right);
     }
 }
 
-int main()
-{
+int main(){
+
     struct Node *root=NULL;
 
     int arr[]={8,6,4,3,7,5,10,11,9};
@@ -98,14 +82,21 @@ int main()
     for(int i=0;i<n;i++)
         root=insert(root,arr[i]);
 
-    printf("Initial AVL Tree (Inorder with Balance Factor):\n");
+    printf("Initial Tree:\n");
     inorder(root);
 
-    printf("\n\nInsert 2\n");
+    printf("\n\nInsert 2 (Before balancing):\n");
 
     root=insert(root,2);
 
-    printf("Tree after LL rotation:\n");
+    inorder(root);
+
+    printf("\nTree is NOT height balanced.\n");
+
+    /* LL rotation on node 4 */
+    root->left = rightRotate(root->left);
+
+    printf("\nAfter LL Rotation:\n");
     inorder(root);
 
     return 0;
