@@ -1,103 +1,182 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Node{
+struct node
+{
     int data;
-    struct Node *left;
-    struct Node *right;
-    int height;
+    struct node *left;
+    struct node *right;
 };
 
-int max(int a,int b){
-    return (a>b)?a:b;
+struct node* createNode(int data)
+{
+    struct node* newNode = (struct node*)malloc(sizeof(struct node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
 }
 
-int height(struct Node *n){
-    if(n==NULL)
+int height(struct node* root)
+{
+    if(root == NULL)
+        return -1;
+
+    int lh = height(root->left);
+    int rh = height(root->right);
+
+    return (lh > rh ? lh : rh) + 1;
+}
+
+int balanceFactor(struct node* root)
+{
+    if(root == NULL)
         return 0;
-    return n->height;
+
+    return height(root->left) - height(root->right);
 }
 
-struct Node* createNode(int value){
-    struct Node* node=(struct Node*)malloc(sizeof(struct Node));
-    node->data=value;
-    node->left=NULL;
-    node->right=NULL;
-    node->height=1;
-    return node;
-}
+struct node* insert(struct node* root, int data)
+{
+    if(root == NULL)
+        return createNode(data);
 
-int getBalance(struct Node *n){
-    if(n==NULL)
-        return 0;
-    return height(n->left)-height(n->right);
-}
-
-struct Node* insert(struct Node* root,int key){
-
-    if(root==NULL)
-        return createNode(key);
-
-    if(key < root->data)
-        root->left = insert(root->left,key);
-
-    else if(key > root->data)
-        root->right = insert(root->right,key);
-
-    root->height = 1 + max(height(root->left),height(root->right));
+    if(data < root->data)
+        root->left = insert(root->left, data);
+    else
+        root->right = insert(root->right, data);
 
     return root;
 }
 
+void displayBalance(struct node* root)
+{
+    if(root == NULL)
+        return;
+
+    displayBalance(root->left);
+
+    printf("Node %d -> Balance Factor = %d\n", root->data, balanceFactor(root));
+
+    displayBalance(root->right);
+}
+
 /* LL Rotation */
-struct Node* rightRotate(struct Node *y){
+struct node* LLRotation(struct node* root)
+{
+    struct node* temp = root->left;
+    root->left = temp->right;
+    temp->right = root;
 
-    struct Node *x = y->left;
-    struct Node *T2 = x->right;
-
-    x->right = y;
-    y->left = T2;
-
-    y->height = max(height(y->left),height(y->right))+1;
-    x->height = max(height(x->left),height(x->right))+1;
-
-    return x;
+    return temp;
 }
 
-void inorder(struct Node *root){
-    if(root!=NULL){
-        inorder(root->left);
-        printf("%d(BF=%d) ",root->data,getBalance(root));
-        inorder(root->right);
-    }
+/* RR Rotation */
+struct node* RRRotation(struct node* root)
+{
+    struct node* temp = root->right;
+    root->right = temp->left;
+    temp->left = root;
+
+    return temp;
 }
 
-int main(){
+/* LR Rotation */
+struct node* LRRotation(struct node* root)
+{
+    root->left = RRRotation(root->left);
+    return LLRotation(root);
+}
 
-    struct Node *root=NULL;
+/* RL Rotation */
+struct node* RLRotation(struct node* root)
+{
+    root->right = LLRotation(root->right);
+    return RRRotation(root);
+}
 
-    int arr[]={8,6,4,3,7,5,10,11,9};
-    int n=9;
+void inorder(struct node* root)
+{
+    if(root == NULL)
+        return;
+
+    inorder(root->left);
+    printf("%d ", root->data);
+    inorder(root->right);
+}
+
+int main()
+{
+    struct node* root = NULL;
+
+    int arr[] = {8,6,4,3,7,5,10,11,9};
+    int n = 9;
 
     for(int i=0;i<n;i++)
-        root=insert(root,arr[i]);
+        root = insert(root, arr[i]);
 
-    printf("Initial Tree:\n");
-    inorder(root);
+    int choice;
 
-    printf("\n\nInsert 2 (Before balancing):\n");
+    while(1)
+    {
+        printf("\n------ AVL Tree Menu ------\n");
+        printf("1. Display Inorder Traversal\n");
+        printf("2. Show Balance Factors\n");
+        printf("3. Insert 2\n");
+        printf("4. LL Rotation\n");
+        printf("5. RR Rotation\n");
+        printf("6. LR Rotation\n");
+        printf("7. RL Rotation\n");
+        printf("8. Exit\n");
 
-    root=insert(root,2);
+        printf("Enter choice: ");
+        scanf("%d",&choice);
 
-    inorder(root);
+        switch(choice)
+        {
+            case 1:
+                printf("Inorder: ");
+                inorder(root);
+                printf("\n");
+                break;
 
-    printf("\nTree is NOT height balanced.\n");
+            case 2:
+                printf("\nBalance Factors:\n");
+                displayBalance(root);
+                break;
 
-    /* LL rotation on node 4 */
-    root->left = rightRotate(root->left);
+            case 3:
+                root = insert(root,2);
+                printf("2 inserted.\n");
+                break;
 
-    printf("\nAfter LL Rotation:\n");
-    inorder(root);
+            case 4:
+                root = LLRotation(root);
+                printf("LL Rotation Done\n");
+                break;
+
+            case 5:
+                root = RRRotation(root);
+                printf("RR Rotation Done\n");
+                break;
+
+            case 6:
+                root = LRRotation(root);
+                printf("LR Rotation Done\n");
+                break;
+
+            case 7:
+                root = RLRotation(root);
+                printf("RL Rotation Done\n");
+                break;
+
+            case 8:
+                exit(0);
+
+            default:
+                printf("Invalid Choice\n");
+        }
+    }
 
     return 0;
 }
