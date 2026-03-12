@@ -1,0 +1,134 @@
+#include <stdio.h>
+
+#define MAX 100
+
+struct Node
+{
+    int process;
+    int priority;
+};
+
+struct Node heap[MAX];
+int size = 0;
+
+void swap(struct Node *a, struct Node *b)
+{
+    struct Node temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void heapifyUp(int index)
+{
+    int parent = (index - 1) / 2;
+
+    while(index > 0 && heap[parent].priority < heap[index].priority)
+    {
+        swap(&heap[parent], &heap[index]);
+        index = parent;
+        parent = (index - 1) / 2;
+    }
+}
+
+void heapifyDown(int index)
+{
+    int largest = index;
+    int left = 2*index + 1;
+    int right = 2*index + 2;
+
+    if(left < size && heap[left].priority > heap[largest].priority)
+        largest = left;
+
+    if(right < size && heap[right].priority > heap[largest].priority)
+        largest = right;
+
+    if(largest != index)
+    {
+        swap(&heap[index], &heap[largest]);
+        heapifyDown(largest);
+    }
+}
+
+void insert()
+{
+    if(size == MAX)
+    {
+        printf("Priority Queue Full\n");
+        return;
+    }
+
+    int process, priority;
+
+    printf("Enter Process ID: ");
+    scanf("%d",&process);
+
+    printf("Enter Priority: ");
+    scanf("%d",&priority);
+
+    heap[size].process = process;
+    heap[size].priority = priority;
+
+    heapifyUp(size);
+    size++;
+
+    printf("Inserted successfully\n");
+}
+
+void extractMax()
+{
+    if(size == 0)
+    {
+        printf("Priority Queue Empty\n");
+        return;
+    }
+
+    struct Node root = heap[0];
+
+    heap[0] = heap[size-1];
+    size--;
+
+    heapifyDown(0);
+
+    printf("Executed Process P%d with priority %d\n",root.process,root.priority);
+}
+
+void display()
+{
+    if(size == 0)
+    {
+        printf("Queue Empty\n");
+        return;
+    }
+
+    printf("Priority Queue:\n");
+
+    for(int i=0;i<size;i++)
+        printf("P%d(%d) ",heap[i].process,heap[i].priority);
+
+    printf("\n");
+}
+
+int main()
+{
+    int choice;
+
+    while(1)
+    {
+        printf("\n--- Max Priority Queue ---\n");
+        printf("1. Insert Process\n");
+        printf("2. Extract Max Priority Process\n");
+        printf("3. Display Queue\n");
+        printf("4. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d",&choice);
+
+        switch(choice)
+        {
+            case 1: insert(); break;
+            case 2: extractMax(); break;
+            case 3: display(); break;
+            case 4: return 0;
+            default: printf("Invalid choice\n");
+        }
+    }
+}
