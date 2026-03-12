@@ -1,134 +1,123 @@
 #include <stdio.h>
 
-#define MAX 100
+int h[100], n = 0;
 
-struct Node
-{
-    int process;
-    int priority;
-};
-
-struct Node heap[MAX];
-int size = 0;
-
-void swap(struct Node *a, struct Node *b)
-{
-    struct Node temp = *a;
+void swap(int *a, int *b) {
+    int t = *a;
     *a = *b;
-    *b = temp;
+    *b = t;
 }
 
-void heapifyUp(int index)
-{
-    int parent = (index - 1) / 2;
+void heapify(int i) {
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
+    int m = i;
 
-    while(index > 0 && heap[parent].priority < heap[index].priority)
-    {
-        swap(&heap[parent], &heap[index]);
-        index = parent;
-        parent = (index - 1) / 2;
+    if (l < n && h[l] > h[m])
+        m = l;
+
+    if (r < n && h[r] > h[m])
+        m = r;
+
+    if (m != i) {
+        swap(&h[i], &h[m]);
+        heapify(m);
     }
 }
 
-void heapifyDown(int index)
-{
-    int largest = index;
-    int left = 2*index + 1;
-    int right = 2*index + 2;
+void enqueue(int v) {
+    h[n] = v;
+    int i = n;
+    n++;
 
-    if(left < size && heap[left].priority > heap[largest].priority)
-        largest = left;
-
-    if(right < size && heap[right].priority > heap[largest].priority)
-        largest = right;
-
-    if(largest != index)
-    {
-        swap(&heap[index], &heap[largest]);
-        heapifyDown(largest);
+    while (i > 0 && h[(i - 1) / 2] < h[i]) {
+        swap(&h[i], &h[(i - 1) / 2]);
+        i = (i - 1) / 2;
     }
+
+    printf("Enqueued %d\n", v);
 }
 
-void insert()
-{
-    if(size == MAX)
-    {
-        printf("Priority Queue Full\n");
+int dequeue() {
+    if (n == 0) {
+        printf("Priority Queue is empty!\n");
+        return -1;
+    }
+
+    int v = h[0];
+    h[0] = h[n - 1];
+    n--;
+
+    heapify(0);
+    return v;
+}
+
+int peek() {
+    if (n == 0) {
+        printf("Priority Queue is empty!\n");
+        return -1;
+    }
+
+    return h[0];
+}
+
+void display() {
+    if (n == 0) {
+        printf("Priority Queue is empty!\n");
         return;
     }
 
-    int process, priority;
-
-    printf("Enter Process ID: ");
-    scanf("%d",&process);
-
-    printf("Enter Priority: ");
-    scanf("%d",&priority);
-
-    heap[size].process = process;
-    heap[size].priority = priority;
-
-    heapifyUp(size);
-    size++;
-
-    printf("Inserted successfully\n");
-}
-
-void extractMax()
-{
-    if(size == 0)
-    {
-        printf("Priority Queue Empty\n");
-        return;
-    }
-
-    struct Node root = heap[0];
-
-    heap[0] = heap[size-1];
-    size--;
-
-    heapifyDown(0);
-
-    printf("Executed Process P%d with priority %d\n",root.process,root.priority);
-}
-
-void display()
-{
-    if(size == 0)
-    {
-        printf("Queue Empty\n");
-        return;
-    }
-
-    printf("Priority Queue:\n");
-
-    for(int i=0;i<size;i++)
-        printf("P%d(%d) ",heap[i].process,heap[i].priority);
+    printf("Priority Queue: ");
+    for (int i = 0; i < n; i++)
+        printf("%d ", h[i]);
 
     printf("\n");
 }
 
-int main()
-{
-    int choice;
+int main() {
+    int c, v;
 
-    while(1)
-    {
-        printf("\n--- Max Priority Queue ---\n");
-        printf("1. Insert Process\n");
-        printf("2. Extract Max Priority Process\n");
-        printf("3. Display Queue\n");
-        printf("4. Exit\n");
-        printf("Enter choice: ");
-        scanf("%d",&choice);
+    printf("===== Max Priority Queue =====\n");
+    printf("1. Enqueue\n2. Dequeue\n3. Peek\n4. Display\n0. Exit\n");
 
-        switch(choice)
-        {
-            case 1: insert(); break;
-            case 2: extractMax(); break;
-            case 3: display(); break;
-            case 4: return 0;
-            default: printf("Invalid choice\n");
+    while (1) {
+        printf("\nEnter choice: ");
+        scanf("%d", &c);
+
+        switch (c) {
+
+        case 1:
+            printf("Enter value: ");
+            scanf("%d", &v);
+            enqueue(v);
+            display();
+            break;
+
+        case 2:
+            v = dequeue();
+            if (v != -1)
+                printf("Dequeued: %d\n", v);
+            display();
+            break;
+
+        case 3:
+            v = peek();
+            if (v != -1)
+                printf("Highest priority element: %d\n", v);
+            break;
+
+        case 4:
+            display();
+            break;
+
+        case 0:
+            printf("Exiting.\n");
+            return 0;
+
+        default:
+            printf("Invalid choice!\n");
         }
     }
+
+    return 0;
 }
