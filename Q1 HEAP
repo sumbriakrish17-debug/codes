@@ -5,7 +5,7 @@
 int heap[MAX];
 int size = 0;
 
-// Swap function
+/* Function to swap two elements */
 void swap(int *a, int *b)
 {
     int temp = *a;
@@ -13,7 +13,7 @@ void swap(int *a, int *b)
     *b = temp;
 }
 
-// Heapify Up (for insertion)
+/* Heapify Up (used during insertion) */
 void heapifyUp(int index)
 {
     int parent = (index - 1) / 2;
@@ -26,12 +26,12 @@ void heapifyUp(int index)
     }
 }
 
-// Heapify Down (for deletion)
+/* Heapify Down (used during deletion) */
 void heapifyDown(int index)
 {
     int largest = index;
-    int left = 2 * index + 1;
-    int right = 2 * index + 2;
+    int left = 2*index + 1;
+    int right = 2*index + 2;
 
     if(left < size && heap[left] > heap[largest])
         largest = left;
@@ -46,64 +46,92 @@ void heapifyDown(int index)
     }
 }
 
-// Insert into heap
+/* Insert element */
 void insert(int value)
 {
+    if(size == MAX)
+    {
+        printf("Heap Overflow\n");
+        return;
+    }
+
     heap[size] = value;
     heapifyUp(size);
     size++;
+
+    printf("Inserted successfully\n");
 }
 
-// Remove root from heap
-int deleteRoot()
+/* Remove root element */
+void deleteRoot()
 {
     if(size == 0)
     {
         printf("Heap is empty\n");
-        return -1;
+        return;
     }
 
-    int root = heap[0];
+    printf("Deleted element: %d\n", heap[0]);
+
     heap[0] = heap[size - 1];
     size--;
 
     heapifyDown(0);
-
-    return root;
 }
 
-// Display heap
+/* Display heap elements */
 void display()
 {
-    for(int i = 0; i < size; i++)
+    if(size == 0)
+    {
+        printf("Heap is empty\n");
+        return;
+    }
+
+    printf("Heap elements:\n");
+
+    for(int i=0;i<size;i++)
         printf("%d ", heap[i]);
 
     printf("\n");
 }
 
-// Main function
 int main()
 {
-    int arr[] = {5,7,3,10,14,12,2,13,20,9};
-    int n = 10;
+    int choice,value;
 
-    printf("Inserting elements:\n");
-
-    for(int i = 0; i < n; i++)
-        insert(arr[i]);
-
-    printf("Max Heap:\n");
-    display();
-
-    printf("\nRemoving root elements:\n");
-
-    for(int i = 0; i < 3; i++)
+    while(1)
     {
-        int removed = deleteRoot();
-        printf("Removed element: %d\n", removed);
-        printf("Heap after removal: ");
-        display();
-    }
+        printf("\n--- MAX HEAP MENU ---\n");
+        printf("1. Insert\n");
+        printf("2. Delete Root\n");
+        printf("3. Display\n");
+        printf("4. Exit\n");
+        printf("Enter choice: ");
 
-    return 0;
+        scanf("%d",&choice);
+
+        switch(choice)
+        {
+            case 1:
+                printf("Enter value: ");
+                scanf("%d",&value);
+                insert(value);
+                break;
+
+            case 2:
+                deleteRoot();
+                break;
+
+            case 3:
+                display();
+                break;
+
+            case 4:
+                return 0;
+
+            default:
+                printf("Invalid choice\n");
+        }
+    }
 }
