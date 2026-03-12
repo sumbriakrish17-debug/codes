@@ -1,0 +1,109 @@
+#include <stdio.h>
+
+#define MAX 100
+
+int heap[MAX];
+int size = 0;
+
+// Swap function
+void swap(int *a, int *b)
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// Heapify Up (for insertion)
+void heapifyUp(int index)
+{
+    int parent = (index - 1) / 2;
+
+    while(index > 0 && heap[parent] < heap[index])
+    {
+        swap(&heap[parent], &heap[index]);
+        index = parent;
+        parent = (index - 1) / 2;
+    }
+}
+
+// Heapify Down (for deletion)
+void heapifyDown(int index)
+{
+    int largest = index;
+    int left = 2 * index + 1;
+    int right = 2 * index + 2;
+
+    if(left < size && heap[left] > heap[largest])
+        largest = left;
+
+    if(right < size && heap[right] > heap[largest])
+        largest = right;
+
+    if(largest != index)
+    {
+        swap(&heap[index], &heap[largest]);
+        heapifyDown(largest);
+    }
+}
+
+// Insert into heap
+void insert(int value)
+{
+    heap[size] = value;
+    heapifyUp(size);
+    size++;
+}
+
+// Remove root from heap
+int deleteRoot()
+{
+    if(size == 0)
+    {
+        printf("Heap is empty\n");
+        return -1;
+    }
+
+    int root = heap[0];
+    heap[0] = heap[size - 1];
+    size--;
+
+    heapifyDown(0);
+
+    return root;
+}
+
+// Display heap
+void display()
+{
+    for(int i = 0; i < size; i++)
+        printf("%d ", heap[i]);
+
+    printf("\n");
+}
+
+// Main function
+int main()
+{
+    int arr[] = {5,7,3,10,14,12,2,13,20,9};
+    int n = 10;
+
+    printf("Inserting elements:\n");
+
+    for(int i = 0; i < n; i++)
+        insert(arr[i]);
+
+    printf("Max Heap:\n");
+    display();
+
+    printf("\nRemoving root elements:\n");
+
+    for(int i = 0; i < 3; i++)
+    {
+        int removed = deleteRoot();
+        printf("Removed element: %d\n", removed);
+        printf("Heap after removal: ");
+        display();
+    }
+
+    return 0;
+}
