@@ -1,0 +1,56 @@
+#include <stdio.h>
+
+int linearSearch(int arr[], int n, int key, int *comparisons) {
+    *comparisons = 0;
+
+    for (int i = 0; i < n; i++) {
+        (*comparisons)++;  // count comparison
+
+        if (arr[i] == key) {
+            return i;  // found
+        }
+    }
+
+    return -1;  // not found
+}
+
+int main() {
+    int arr[10];
+    int i;
+
+    printf("Enter 10 numbers:\n");
+    for (i = 0; i < 10; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    int key1, key2;
+    int comp1, comp2;
+
+    // Existing element
+    printf("\nEnter a number to search (existing): ");
+    scanf("%d", &key1);
+
+    int result1 = linearSearch(arr, 10, key1, &comp1);
+
+    if (result1 != -1)
+        printf("Element found at position %d\n", result1 + 1);
+    else
+        printf("Element not found\n");
+
+    printf("Comparisons made: %d\n", comp1);
+
+    // Non-existing element
+    printf("\nEnter a number to search (non-existing): ");
+    scanf("%d", &key2);
+
+    int result2 = linearSearch(arr, 10, key2, &comp2);
+
+    if (result2 != -1)
+        printf("Element found at position %d\n", result2 + 1);
+    else
+        printf("Element not found\n");
+
+    printf("Comparisons made: %d\n", comp2);
+
+    return 0;
+}
