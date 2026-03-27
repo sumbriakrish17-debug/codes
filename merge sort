@@ -1,5 +1,4 @@
-#include <iostream>
-using namespace std;
+#include <stdio.h>
 
 int comparisons = 0;
 
@@ -52,19 +51,19 @@ void mergeSort(int arr[], int left, int right) {
 int main() {
     int arr[10];
 
-    cout << "Enter 10 numbers:\n";
+    printf("Enter 10 numbers:\n");
     for (int i = 0; i < 10; i++) {
-        cin >> arr[i];
+        scanf("%d", &arr[i]);
     }
 
     mergeSort(arr, 0, 9);
 
-    cout << "\nSorted array:\n";
+    printf("\nSorted array:\n");
     for (int i = 0; i < 10; i++) {
-        cout << arr[i] << " ";
+        printf("%d ", arr[i]);
     }
 
-    cout << "\n\nNumber of comparisons: " << comparisons << endl;
+    printf("\n\nNumber of comparisons: %d\n", comparisons);
 
     return 0;
 }
