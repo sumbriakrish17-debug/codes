@@ -1,25 +1,25 @@
-#include <iostream>
-using namespace std;
+#include <stdio.h>
+#include <stdlib.h>
 
 int comparisons = 0;
 
 // BST Node
 struct Node {
     int data;
-    Node* left;
-    Node* right;
+    struct Node* left;
+    struct Node* right;
 };
 
 // Create new node
-Node* createNode(int value) {
-    Node* newNode = new Node();
+struct Node* createNode(int value) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
     newNode->data = value;
     newNode->left = newNode->right = NULL;
     return newNode;
 }
 
 // Insert into BST (with comparison count)
-Node* insert(Node* root, int value) {
+struct Node* insert(struct Node* root, int value) {
     if (root == NULL)
         return createNode(value);
 
@@ -28,7 +28,7 @@ Node* insert(Node* root, int value) {
     if (value < root->data)
         root->left = insert(root->left, value);
     else {
-        comparisons++; // second comparison (value >= root->data)
+        comparisons++; // second comparison
         root->right = insert(root->right, value);
     }
 
@@ -36,28 +36,28 @@ Node* insert(Node* root, int value) {
 }
 
 // Inorder traversal (sorted output)
-void inorder(Node* root) {
+void inorder(struct Node* root) {
     if (root != NULL) {
         inorder(root->left);
-        cout << root->data << " ";
+        printf("%d ", root->data);
         inorder(root->right);
     }
 }
 
 int main() {
-    Node* root = NULL;
+    struct Node* root = NULL;
     int arr[10];
 
-    cout << "Enter 10 numbers:\n";
+    printf("Enter 10 numbers:\n");
     for (int i = 0; i < 10; i++) {
-        cin >> arr[i];
+        scanf("%d", &arr[i]);
         root = insert(root, arr[i]);
     }
 
-    cout << "\nSorted array (BST Sort):\n";
+    printf("\nSorted array (BST Sort):\n");
     inorder(root);
 
-    cout << "\n\nNumber of comparisons: " << comparisons << endl;
+    printf("\n\nNumber of comparisons: %d\n", comparisons);
 
     return 0;
 }
