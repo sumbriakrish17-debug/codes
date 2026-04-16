@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define V 8
+
+#define WHITE 0
+#define GRAY 1
+#define BLACK 2
+
+int queue[V];
+int front = 0, rear = 0;
+
+void enqueue(int x) {
+    queue[rear++] = x;
+}
+
+int dequeue() {
+    return queue[front++];
+}
+
+int isEmpty() {
+    return front == rear;
+}
+
+void printQueue() {
+    printf("Queue: ");
+    for (int i = front; i < rear; i++)
+        printf("%d ", queue[i]);
+    printf("\n");
+}
+
+void printColor(int color[]) {
+    printf("Color: ");
+    for (int i = 0; i < V; i++) {
+        if (color[i] == WHITE) printf("W ");
+        else if (color[i] == GRAY) printf("G ");
+        else printf("B ");
+    }
+    printf("\n");
+}
+
+void printDistance(int dist[]) {
+    printf("Distance: ");
+    for (int i = 0; i < V; i++) {
+        if (dist[i] == INT_MAX) printf("INF ");
+        else printf("%d ", dist[i]);
+    }
+    printf("\n");
+}
+
+void printParent(int parent[]) {
+    printf("\nParent (π) array:\n");
+    for (int i = 0; i < V; i++)
+        printf("%d -> %d\n", i, parent[i]);
+}
+
+void BFS(int graph[V][V], int start) {
+    int color[V], dist[V], parent[V];
+
+    for (int i = 0; i < V; i++) {
+        color[i] = WHITE;
+        dist[i] = INT_MAX;
+        parent[i] = -1;
+    }
+
+    color[start] = GRAY;
+    dist[start] = 0;
+    enqueue(start);
+
+    while (!isEmpty()) {
+        int u = dequeue();
+
+        printf("\nVisited Node: %d\n", u);
+
+        for (int v = 0; v < V; v++) {
+            if (graph[u][v] == 1 && color[v] == WHITE) {
+                color[v] = GRAY;
+                dist[v] = dist[u] + 1;
+                parent[v] = u;
+                enqueue(v);
+            }
+        }
+
+        color[u] = BLACK;
+
+        printQueue();
+        printColor(color);
+        printDistance(dist);
+    }
+
+    printParent(parent);
+}
+
+int main() {
+
+    int graph[V][V] = {
+        //0 1 2 3 4 5 6 7
+        {0,1,0,1,0,0,0,0}, // 0
+        {1,0,1,0,0,0,0,0}, // 1
+        {0,1,0,0,0,0,0,0}, // 2
+        {1,0,0,0,1,1,0,0}, // 3
+        {0,0,0,1,0,1,1,0}, // 4
+        {0,0,0,1,1,0,1,1}, // 5
+        {0,0,0,0,1,1,0,1}, // 6
+        {0,0,0,0,0,1,1,0}  // 7
+    };
+
+    BFS(graph, 0);
+
+    return 0;
+}
