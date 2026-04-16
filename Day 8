@@ -1,4 +1,4 @@
-#include <stdio.h>
+    #include <stdio.h>
 #include <limits.h>
 
 #define V 4
@@ -8,47 +8,63 @@
 #define BLACK 2
 
 int time = 0;
-
-// Stack for display
-int stack[V];
-int top = -1;
-
-void push(int x) {
-    stack[++top] = x;
-}
-
-void pop() {
-    if (top >= 0) top--;
-}
-
-void printStack() {
-    printf("Stack: ");
-    for (int i = 0; i <= top; i++)
-        printf("%d ", stack[i]);
-    printf("\n");
-}
+int call = 1;
 
 void printColor(int color[]) {
-    printf("Color: ");
+    printf("Color Array:\n");
+    for (int i = 0; i < V; i++) printf("%d ", i);
+    printf("\n");
+
     for (int i = 0; i < V; i++) {
-        if (color[i] == WHITE) printf("W ");
-        else if (color[i] == GRAY) printf("G ");
-        else printf("B ");
+        if (color[i] == WHITE) printf("White ");
+        else if (color[i] == GRAY) printf("Grey ");
+        else printf("Black ");
+    }
+    printf("\n\n");
+}
+
+void printStartTime(int d[]) {
+    printf("Starting Time Array:\n");
+    for (int i = 0; i < V; i++) printf("%d ", i);
+    printf("\n");
+
+    for (int i = 0; i < V; i++) {
+        if (d[i] == INT_MAX) printf("0 ");
+        else printf("%d ", d[i]);
+    }
+    printf("\n\n");
+}
+
+void printFinishTime(int f[]) {
+    printf("Finishing Time Array:\n");
+    for (int i = 0; i < V; i++) printf("%d ", i);
+    printf("\n");
+
+    for (int i = 0; i < V; i++) {
+        if (f[i] == INT_MAX) printf("0 ");
+        else printf("%d ", f[i]);
+    }
+    printf("\n\n");
+}
+
+void printParent(int parent[]) {
+    printf("Pi Array:\n");
+    for (int i = 0; i < V; i++) {
+        printf("Node %d -> Parent: %d\n", i, parent[i]);
     }
     printf("\n");
 }
 
 void DFS_Visit(int graph[V][V], int u, int color[], int parent[], int d[], int f[]) {
 
+    printf("--------------------------------------------------\n");
+    printf("Recursive call %d        Visited %d\n\n", call++, u);
+
     color[u] = GRAY;
     d[u] = ++time;
 
-    push(u);
-
-    printf("\nVisit Node: %d\n", u);
-    printStack();
     printColor(color);
-    printf("Start Time: %d\n", d[u]);
+    printStartTime(d);
 
     for (int v = 0; v < V; v++) {
         if (graph[u][v] == 1 && color[v] == WHITE) {
@@ -60,12 +76,12 @@ void DFS_Visit(int graph[V][V], int u, int color[], int parent[], int d[], int f
     color[u] = BLACK;
     f[u] = ++time;
 
-    pop();
+    printf("--------------------------------------------------\n");
+    printf("Finishing Node %d\n\n", u);
 
-    printf("Finish Node: %d\n", u);
-    printStack();
     printColor(color);
-    printf("Finish Time: %d\n", f[u]);
+    printFinishTime(f);
+    printParent(parent);
 }
 
 void DFS(int graph[V][V]) {
@@ -82,18 +98,6 @@ void DFS(int graph[V][V]) {
         if (color[i] == WHITE) {
             DFS_Visit(graph, i, color, parent, d, f);
         }
-    }
-
-    // Parent array
-    printf("\nParent (π) array:\n");
-    for (int i = 0; i < V; i++) {
-        printf("%d -> %d\n", i, parent[i]);
-    }
-
-    // Parenthesis structure
-    printf("\nParenthesis structure:\n");
-    for (int i = 0; i < V; i++) {
-        printf("%d: (%d, %d)\n", i, d[i], f[i]);
     }
 }
 
