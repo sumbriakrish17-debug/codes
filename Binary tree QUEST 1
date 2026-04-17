@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Define structure for a tree node
+// Node structure
 struct Node {
     int data;
     struct Node* left;
     struct Node* right;
 };
 
-// Function to create a new node
+// Create new node
 struct Node* createNode(int data) {
     struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
     newNode->data = data;
@@ -17,28 +17,21 @@ struct Node* createNode(int data) {
     return newNode;
 }
 
-// Function to insert node in level order
+// Insert in level order
 struct Node* insertLevelOrder(struct Node* root, int data) {
-    // Create new node
     struct Node* newNode = createNode(data);
 
-    // If tree is empty
-    if (root == NULL) {
+    if (root == NULL)
         return newNode;
-    }
 
-    // Create a queue for level order traversal
     struct Node* queue[100];
     int front = 0, rear = 0;
 
-    // Enqueue root
     queue[rear++] = root;
 
-    // Traverse tree in level order
     while (front < rear) {
         struct Node* temp = queue[front++];
 
-        // Insert as left child if empty
         if (temp->left == NULL) {
             temp->left = newNode;
             return root;
@@ -46,7 +39,6 @@ struct Node* insertLevelOrder(struct Node* root, int data) {
             queue[rear++] = temp->left;
         }
 
-        // Insert as right child if empty
         if (temp->right == NULL) {
             temp->right = newNode;
             return root;
@@ -58,8 +50,8 @@ struct Node* insertLevelOrder(struct Node* root, int data) {
     return root;
 }
 
-// Function to print tree in level order
-void printLevelOrder(struct Node* root) {
+// Print structure (IMPORTANT PART)
+void printStructure(struct Node* root) {
     if (root == NULL)
         return;
 
@@ -70,13 +62,22 @@ void printLevelOrder(struct Node* root) {
 
     while (front < rear) {
         struct Node* temp = queue[front++];
-        printf("%d ", temp->data);
 
-        if (temp->left != NULL)
+        printf("Node %d -> ", temp->data);
+
+        if (temp->left != NULL) {
+            printf("Left child = %d, ", temp->left->data);
             queue[rear++] = temp->left;
+        } else {
+            printf("Left child = NULL, ");
+        }
 
-        if (temp->right != NULL)
+        if (temp->right != NULL) {
+            printf("Right child = %d\n", temp->right->data);
             queue[rear++] = temp->right;
+        } else {
+            printf("Right child = NULL\n");
+        }
     }
 }
 
@@ -93,8 +94,8 @@ int main() {
         root = insertLevelOrder(root, value);
     }
 
-    printf("\nLevel-order traversal of the Binary Tree:\n");
-    printLevelOrder(root);
+    printf("\nTree Structure:\n");
+    printStructure(root);
 
     return 0;
 }
