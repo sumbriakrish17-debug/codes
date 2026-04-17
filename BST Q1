@@ -1,101 +1,64 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Node structure
 struct Node {
     int data;
-    struct Node* left;
-    struct Node* right;
+    struct Node *left;
+    struct Node *right;
 };
 
-// Create new node
-struct Node* createNode(int data) {
+struct Node* createNode(int value)
+{
     struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
-    newNode->data = data;
+    newNode->data = value;
     newNode->left = NULL;
     newNode->right = NULL;
     return newNode;
 }
 
-// Insert in level order
-struct Node* insertLevelOrder(struct Node* root, int data) {
-    struct Node* newNode = createNode(data);
+struct Node* insert(struct Node* root, int value)
+{
+    if(root == NULL)
+        return createNode(value);
 
-    if (root == NULL)
-        return newNode;
+    if(value < root->data)
+        root->left = insert(root->left, value);
 
-    struct Node* queue[100];
-    int front = 0, rear = 0;
-
-    queue[rear++] = root;
-
-    while (front < rear) {
-        struct Node* temp = queue[front++];
-
-        if (temp->left == NULL) {
-            temp->left = newNode;
-            return root;
-        } else {
-            queue[rear++] = temp->left;
-        }
-
-        if (temp->right == NULL) {
-            temp->right = newNode;
-            return root;
-        } else {
-            queue[rear++] = temp->right;
-        }
-    }
+    else if(value > root->data)
+        root->right = insert(root->right, value);
 
     return root;
 }
 
-// Print structure (IMPORTANT PART)
-void printStructure(struct Node* root) {
-    if (root == NULL)
-        return;
-
-    struct Node* queue[100];
-    int front = 0, rear = 0;
-
-    queue[rear++] = root;
-
-    while (front < rear) {
-        struct Node* temp = queue[front++];
-
-        printf("Node %d -> ", temp->data);
-
-        if (temp->left != NULL) {
-            printf("Left child = %d, ", temp->left->data);
-            queue[rear++] = temp->left;
-        } else {
-            printf("Left child = NULL, ");
-        }
-
-        if (temp->right != NULL) {
-            printf("Right child = %d\n", temp->right->data);
-            queue[rear++] = temp->right;
-        } else {
-            printf("Right child = NULL\n");
-        }
+void inorder(struct Node* root)
+{
+    if(root != NULL)
+    {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
     }
 }
 
-int main() {
+int main()
+{
     struct Node* root = NULL;
     int n, value;
 
-    printf("Enter number of nodes: ");
+    printf("Enter number of elements: ");
     scanf("%d", &n);
 
-    for (int i = 0; i < n; i++) {
-        printf("Enter data for node %d: ", i + 1);
+    for(int i = 0; i < n; i++)
+    {
+        printf("Enter value: ");
         scanf("%d", &value);
-        root = insertLevelOrder(root, value);
-    }
 
-    printf("\nTree Structure:\n");
-    printStructure(root);
+        root = insert(root, value);
+
+        printf("In-order traversal: ");
+        inorder(root);
+        printf("\n");
+    }
 
     return 0;
 }
